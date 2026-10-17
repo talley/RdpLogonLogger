@@ -1,0 +1,4 @@
+# RdpLogonLogger
+This program will collect every RDP  session info(compter,username, login date, login time, logout time (and more later) .
+The program will export the log data into a folder(see appsettings.json file)
+This program requires  .NET Core 10 Desktop runtime.
