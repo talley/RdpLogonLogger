@@ -1,0 +1,59 @@
+@model SessionsViewModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RDP Session Viewer</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<main>
+    <header><div><p class="eyebrow">SESSION ACTIVITY</p><h1>RDP Session Viewer</h1><p>Login, logout, and connection history from your Excel log.</p></div>
+        <a class="button" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@Model.Page" asp-route-pageSize="@Model.PageSize" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Refresh</a>
+    </header>
+    @if (Model.Error is not null)
+    {
+        <div class="alert" role="alert">@Model.Error</div>
+    }
+    <form method="get" class="toolbar">
+        <label>Search all columns<input name="search" value="@Model.Search" placeholder="User, server, IP address…" /></label>
+        <label>Rows per page<select name="pageSize">
+            @foreach (var size in new[] { 25, 50, 100 })
+            { <option value="@size" selected="@(size == Model.PageSize)">@size</option> }
+        </select></label>
+        <input type="hidden" name="sort" value="@Model.Sort" />
+        <input type="hidden" name="direction" value="@Model.Direction" />
+        <button type="submit">Apply</button><a asp-action="Index">Clear</a>
+    </form>
+    <p class="count">@Model.Matched matching records · @Model.Total total · Page @Model.Page of @Model.Pages</p>
+    <div class="table-wrap">
+    <table>
+        <caption>RDP session records</caption>
+        <thead><tr>
+        @for (var c = 0; c < Model.Headers.Count; c++)
+        {
+            <th scope="col"><a asp-action="Index" asp-route-search="@Model.Search" asp-route-pageSize="@Model.PageSize" asp-route-sort="@c" asp-route-direction="@(c == Model.Sort && Model.Direction == "asc" ? "desc" : "asc")">@Model.Headers[c] @(c == Model.Sort ? (Model.Direction == "asc" ? "↑" : "↓") : "")</a></th>
+        }
+        </tr></thead>
+        <tbody>
+        @foreach (var row in Model.Rows)
+        {
+            <tr>@foreach (var value in row) { <td>@value</td> }</tr>
+        }
+        @if (Model.Rows.Count == 0)
+        { <tr><td colspan="@Math.Max(1, Model.Headers.Count)">No records to display.</td></tr> }
+        </tbody>
+    </table>
+    </div>
+    <nav aria-label="Table pages">
+        @if (Model.Page > 1)
+        { <a class="button secondary" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page - 1)" asp-route-pageSize="@Model.PageSize" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Previous</a> }
+        @if (Model.Page < Model.Pages)
+        { <a class="button secondary" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@(Model.Page + 1)" asp-route-pageSize="@Model.PageSize" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Next</a> }
+    </nav>
+    <footer>Read-only Excel viewer · Click a column heading to sort · Refresh reads the latest saved records</footer>
+</main>
+</body>
+</html>
