@@ -1,0 +1,55 @@
+@model SessionsViewModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RDP Session Viewer</title>
+    <link rel="stylesheet" href="~/lib/dataTables.dataTables.min.css" />
+    <link rel="stylesheet" href="~/lib/responsive.dataTables.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<main>
+    <header><div><p class="eyebrow">SESSION ACTIVITY</p><h1>RDP Session Viewer</h1><p>Login, logout, and connection history from your Excel log.</p></div>
+        <a class="button" asp-action="Index" asp-route-search="@Model.Search" asp-route-page="@Model.Page" asp-route-pageSize="@Model.PageSize" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Refresh</a>
+    </header>
+    @if (Model.Error is not null)
+    {
+        <div class="alert" role="alert">@Model.Error</div>
+    }
+    <div class="actions">
+        <a data-report-action="true" class="button secondary" asp-action="Print" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction" target="_blank" rel="noopener">Print / Save PDF</a>
+        <a data-report-action="true" class="button secondary" asp-action="Export" asp-route-format="xlsx" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Export Excel</a>
+        <a data-report-action="true" class="button secondary" asp-action="Export" asp-route-format="csv" asp-route-search="@Model.Search" asp-route-sort="@Model.Sort" asp-route-direction="@Model.Direction">Export CSV</a>
+        <span>Print and export include all matching records across pages.</span>
+    </div>
+    <p class="count">On smaller screens, expand a row to see additional fields.</p>
+    <p id="table-status" role="status">Loading table controls…</p>
+    <noscript>Enable JavaScript to use pagination and responsive row details.</noscript>
+    <div class="table-wrap">
+    <table id="sessions" class="display" style="width:100%">
+        <caption>RDP session records</caption>
+        <thead><tr>
+        @for (var c = 0; c < Model.Headers.Count; c++)
+        {
+            <th scope="col">@Model.Headers[c]</th>
+        }
+        </tr></thead>
+        <tbody>
+        @foreach (var row in Model.Rows)
+        {
+            <tr>@foreach (var value in row) { <td>@value</td> }</tr>
+        }
+        </tbody>
+    </table>
+    </div>
+    <footer>Read-only Excel viewer · Click a column heading to sort · Refresh reads the latest saved records</footer>
+</main>
+<script src="@Url.Content("~/lib/jquery.min.js")"></script>
+<script src="@Url.Content("~/lib/dataTables.min.js")"></script>
+<script src="@Url.Content("~/lib/dataTables.responsive.min.js")"></script>
+<script src="@Url.Content("~/js/sessions.js")" asp-append-version="true"></script>
+</body>
+</html>
