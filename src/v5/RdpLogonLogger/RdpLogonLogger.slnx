@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../RdpSessionsViewer/RdpSessionsViewer.csproj" />
+  <Project Path="RdpLogonLogger.csproj" />
+</Solution>

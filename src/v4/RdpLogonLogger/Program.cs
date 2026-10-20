@@ -31,6 +31,7 @@ try
 
     Log.Information("==== RdpLogonLogger starting (machine {Machine}, .NET {Ver}) ====",
         Environment.MachineName, Environment.Version);
+    EmailMananger.SendAlertNotification(Environment.MachineName, "==== RdpLogonLogger starting (machine {Machine}, .NET {Ver}) ====",false,null);
 
     builder.Logging.AddSerilog(Log.Logger, dispose: true);
     builder.Services.AddWindowsService(o => o.ServiceName = "RdpLogonLogger");
@@ -41,12 +42,14 @@ try
     builder.Build().Run();
 
     Log.Information("==== RdpLogonLogger stopped normally ====");
+    EmailMananger.SendAlertNotification(Environment.MachineName, $"==== RdpLogonLogger stopped normally on {Environment.MachineName} ====", false, null);
     return 0;
 }
 catch (Exception ex)
 {
     Log.Fatal(ex, "Host terminated unexpectedly");
-    return 1;           // non-zero exit => Windows treats it as a failure and restarts the service
+    EmailMananger.SendAlertNotification(Environment.MachineName, $"====Host {Environment.MachineName} terminated unexpectedly ====", false, null);
+    return 1;// non-zero exit => Windows treats it as a failure and restarts the service
 }
 finally
 {
